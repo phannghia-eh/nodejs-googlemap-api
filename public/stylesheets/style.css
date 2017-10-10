@@ -5,6 +5,12 @@ body {
 a {
   color: #00B7FF;
 }
+#map {
+  height: 100%;
+}
+#map{
+	margin-left: 300px;
+}
 #description {
     font-family: Roboto;
     font-size: 15px;
@@ -54,13 +60,9 @@ a {
     background-color: #fff;
     font-family: Roboto;
     font-weight: 300;
-    margin-left: 12px;
-    padding: 0 11px 0 13px;
+    padding: 10px;
     text-overflow: ellipsis;
-    width: 400px;
-    left: 10px !important;
-    top: 50px !important;
-    font-size: 18px;
+    font-size: 13px;
   }
 
   #pac-input:focus {
@@ -78,7 +80,7 @@ a {
     width: 345px;
   }
   .controls {
-    margin-top: 10px;
+    margin: 10px;
     border: 1px solid transparent;
     border-radius: 2px 0 0 2px;
     box-sizing: border-box;
@@ -92,24 +94,23 @@ a {
   #destination-input {
     background-color: #fff;
     font-family: Roboto;
-    font-size: 15px;
     font-weight: 300;
-    margin-left: 12px;
-    padding: 0 11px 0 13px;
+    padding: 10px;
     text-overflow: ellipsis;
-    width: 200px;
+    font-size: 13px;
   }
 
   #origin-input:focus,
   #destination-input:focus {
-    border-color: #4d90fe;
+    border-color: #7f8c8d;
   }
 
   #mode-selector {
     color: #fff;
-    background-color: #4d90fe;
-    margin-left: 12px;
-    padding: 5px 11px 0px 11px;
+    background-color: #f39c12;
+    //margin-left: 12px;
+    //padding: 5px;
+    text-align: center;
   }
 
   #mode-selector label {
@@ -117,3 +118,140 @@ a {
     font-size: 13px;
     font-weight: 300;
   }
+
+  .cell{
+    margin: 15px;
+  }
+
+  .nav-side-menu {
+  overflow: auto;
+  font-family: verdana;
+  font-size: 12px;
+  font-weight: 200;
+  background-color: #2ecc71;
+  position: fixed;
+  top: 0px;
+  width: 300px;
+  height: 100%;
+}
+.nav-side-menu .brand {
+  background-color: #27ae60;
+  line-height: 50px;
+  display: block;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+}
+.nav-side-menu .toggle-btn {
+  display: none;
+}
+.nav-side-menu ul,
+.nav-side-menu li {
+  list-style: none;
+  padding: 0px;
+  margin: 0px;
+  line-height: 35px;
+  cursor: pointer;
+  /*    
+    .collapsed{
+       .arrow:before{
+                 font-family: FontAwesome;
+                 content: "\f053";
+                 display: inline-block;
+                 padding-left:10px;
+                 padding-right: 10px;
+                 vertical-align: middle;
+                 float:right;
+            }
+     }
+*/
+}
+.nav-side-menu ul :not(collapsed) .arrow:before,
+.nav-side-menu li :not(collapsed) .arrow:before {
+  font-family: FontAwesome;
+  content: "\f078";
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: middle;
+  float: right;
+}
+.nav-side-menu ul .active,
+.nav-side-menu li .active {
+  padding-left: 15px;
+  font-size: 12px;
+  font-weight: 700;
+  background-color: #27ae60;
+}
+.nav-side-menu ul .sub-menu li.active,
+.nav-side-menu li .sub-menu li.active {
+  color: #2ecc71;
+}
+.nav-side-menu ul .sub-menu li.active a,
+.nav-side-menu li .sub-menu li.active a {
+  color: #2ecc71;
+}
+.nav-side-menu ul .sub-menu li,
+.nav-side-menu li .sub-menu li {
+  background-color: #2ecc71;
+  border: none;
+  line-height: 28px;
+  margin-left: 0px;
+}
+.nav-side-menu ul .sub-menu li:hover,
+.nav-side-menu li .sub-menu li:hover {
+  background-color: #2ecc71;
+}
+.nav-side-menu ul .sub-menu li:before,
+.nav-side-menu li .sub-menu li:before {
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: middle;
+}
+.nav-side-menu li {
+  padding-left: 0px;
+
+}
+.nav-side-menu li a {
+  text-decoration: none;
+  color: #e1ffff;
+}
+.nav-side-menu li a i {
+  padding-left: 10px;
+  width: 20px;
+  padding-right: 20px;
+}
+
+@media (max-width: 767px) {
+  .nav-side-menu {
+    position: relative;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .nav-side-menu .toggle-btn {
+    display: block;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 10 !important;
+    padding: 3px;
+    background-color: #ffffff;
+    color: #000;
+    width: 40px;
+    text-align: center;
+  }
+  .brand {
+    text-align: left !important;
+    font-size: 22px;
+    padding-left: 20px;
+    line-height: 50px !important;
+  }
+}
+@media (min-width: 767px) {
+  .nav-side-menu .menu-list .menu-content {
+    display: block;
+  }
+}

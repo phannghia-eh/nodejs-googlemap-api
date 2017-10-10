@@ -6,9 +6,6 @@
     <style>
         /* Always set the map height explicitly to define the size of the div
          * element that contains the map. */
-        #map {
-            height: 100%;
-        }
         /* Optional: Makes the sample page fill the window. */
         html, body {
             height: 100%;
@@ -16,46 +13,109 @@
             padding: 0;
         }
     </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
-   <!-- Seach input -->
-<input id="pac-input" class="controls" type="text" placeholder="Search location">
+    <!-- Left Menu -->
+<div class="nav-side-menu">
+    <div class="brand">DEMO GOOGLE MAP API </div>
+    <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
+  
+        <div class="menu-list">
+  
+            <ul id="menu-content" class="menu-content collapse">
 
-<!-- Direction box -->
+                <li  data-toggle="collapse" data-target="#SerchMenu" class="collapsed active">
+                    <a href="#">Search location </a>
+                </li>
+                <ul class="sub-menu collapse in" id="SerchMenu">
+                    <div class="cell"><input id="pac-input" class="form-control" type="text" placeholder="Search location"></div>
+                </ul>
 
-<input id="origin-input" class="controls" type="text"
-    placeholder="Enter an origin location">
 
-<input id="destination-input" class="controls" type="text"
-    placeholder="Enter a destination location">
 
-<div id="mode-selector" class="controls">
-  <input type="radio" name="type" id="changemode-walking" checked="checked">
-  <label for="changemode-walking">Walking</label>
+                <li data-toggle="collapse" data-target="#DirectionMenu" class="collapsed active">
+                  <a href="#"></i> Get Direction </a>
+                </li>  
+                <ul class="sub-menu collapse in" id="DirectionMenu">
+                    <div class="cell">
+                        <input id="origin-input" class="form-control" type="text" placeholder="Enter an origin location">
+                    </div>
+                    <div class="cell">
+                        <input id="destination-input" class="form-control" type="text" placeholder="Enter a destination location">
+                    </div>
 
-  <input type="radio" name="type" id="changemode-transit">
-  <label for="changemode-transit">Transit</label>
+                    <div class="cell">
+                      <form id="mode-selector">
+                      <label class="checkbox-inline" for="changemode-walking">
+                          <input type="radio" name="type" id="changemode-walking" checked="checked">Walking
+                      </label>
 
-  <input type="radio" name="type" id="changemode-driving">
-  <label for="changemode-driving">Driving</label>
+                      <label class="checkbox-inline" for="changemode-transit">
+                          <input type="radio" name="type" id="changemode-transit" >Bus
+                      </label>
+
+                      <label class="checkbox-inline" for="changemode-driving">
+                          <input type="radio" name="type" id="changemode-driving" >Driving
+                      </label>
+                      </form>
+
+
+                  </div>
+                </ul>
+                <li class="collapsed active">
+                  <a onclick="initMap()">
+                    Get current location
+                  </a>
+                </li>
+            </ul>
+     </div>
 </div>
-<!-- Map -->
+
 <div id="map"></div>
 <script>
-    var map;
+    var map,infoWindow;
+    var posCurrent;
+    var currPlaceId = '';
+
     function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
             center: {lat: 10.7622916, lng: 106.6824567},
-            zoom: 8
+            zoom: 17
         });
+
+        //Get current location
+        infoWindow = new google.maps.InfoWindow;
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                posCurrent = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                var marker = new google.maps.Marker({
+                    position:posCurrent ,
+                    map: map
+                });
+                map.setCenter(posCurrent);
+            }, function() {
+                handleLocationError(true, infoWindow, map.getCenter());
+            });
+        } else {
+            // Browser doesn't support Geolocation
+            handleLocationError(false, infoWindow, map.getCenter());
+        }
+
+
         new AutocompleteDirectionsHandler(map);
 
         // Create the search box and link it to the UI element.
         var input = document.getElementById('pac-input');
         var searchBox = new google.maps.places.SearchBox(input);
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
         // Bias the SearchBox results towards current map's viewport.
         map.addListener('bounds_changed', function() {
@@ -85,6 +145,8 @@
               console.log("Returned place contains no geometry");
               return;
             }
+              currPlaceId = place.place_id;
+
             var icon = {
               url: place.icon,
               size: new google.maps.Size(71, 71),
@@ -96,10 +158,13 @@
             // Create a marker for each place.
             markers.push(new google.maps.Marker({
               map: map,
-              icon: icon,
+              //icon: icon,
               title: place.name,
               position: place.geometry.location
             }));
+
+            //get detail
+              getPlaceDetails(map, currPlaceId);
 
             if (place.geometry.viewport) {
               // Only geocodes have viewport.
@@ -109,8 +174,45 @@
             }
           });
           map.fitBounds(bounds);
+
+        });
+
+
+
+    }
+
+    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                'Error: The Geolocation service failed.' :
+                'Error: Your browser doesn\'t support geolocation.');
+        infoWindow.open(map);
+    }
+
+    function getPlaceDetails(map, placeID){
+        var infowindow = new google.maps.InfoWindow();
+        var service = new google.maps.places.PlacesService(map);
+        service.getDetails({
+            placeId: placeID
+        }, function(place, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: place.geometry.location
+                });
+                google.maps.event.addListener(marker, 'click', function() {
+                    if(place.rating === null || typeof(place.rating) === 'undefined')
+                        place.rating = 'Chưa có đánh giá nào';
+                    infowindow.setContent('<div><strong>' + place.name + '</strong><br>' +
+                            'Place ID: ' + place.place_id + '<br>' +
+                            'Rating: ' + place.rating + '<br>' +
+                            place.formatted_address + '</div>');
+                    infowindow.open(map, this);
+                });
+            }
         });
     }
+
     function AutocompleteDirectionsHandler(map) {
         this.map = map;
         this.originPlaceId = null;
@@ -134,10 +236,6 @@
 
         this.setupPlaceChangedListener(originAutocomplete, 'ORIG');
         this.setupPlaceChangedListener(destinationAutocomplete, 'DEST');
-
-        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(originInput);
-        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(destinationInput);
-        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(modeSelector);
       }
 
       // Sets a listener on a radio button to change the filter type on Places
