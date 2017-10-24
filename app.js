@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var cors = require('cors')
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -25,6 +26,9 @@ var handlebars = require('express-handlebars').create({
         }
     }
 });
+
+app.use(cors());
+
 app.engine('hbs', handlebars.engine);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');

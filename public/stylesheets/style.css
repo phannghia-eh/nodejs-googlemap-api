@@ -11,6 +11,15 @@ a {
 #map{
 	margin-left: 300px;
 }
+#contents{
+  margin-left: 300px;
+}
+#nearby{
+  font-family: Roboto;
+  font-size: 15px;
+  font-weight: 300;
+}
+
 #description {
     font-family: Roboto;
     font-size: 15px;
