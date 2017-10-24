@@ -46,6 +46,8 @@
     </div>
 <script>
     var map;
+    var mediaData;
+    var currLocation;
     var currPlaceId = '';
 
     function initMap() {
@@ -109,6 +111,9 @@
               position: place.geometry.location
             }));
 
+            //get detail
+            getPlaceDetails(map, currPlaceId);
+
             if (place.geometry.viewport) {
               // Only geocodes have viewport.
               bounds.union(place.geometry.viewport);
@@ -135,6 +140,7 @@
                     success: function (data) {
                         if(data){
                             console.log(data.results[0].geometry.location);
+                            currLocation = data.results[0].geometry.location;
                             GetPictureByGeocode(data.results[0].geometry.location);
                             SearchNearBy(data.results[0].geometry.location);
                             return data.results[0].geometry.location;
@@ -143,6 +149,34 @@
                 });
             } else {
                 alert('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+    }
+    function getPlaceDetails(map, placeID){
+        var infowindow = new google.maps.InfoWindow();
+        var service = new google.maps.places.PlacesService(map);
+        service.getDetails({
+            placeId: placeID
+        }, function(place, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: place.geometry.location
+                });
+                google.maps.event.addListener(marker, 'click', function() {
+                    if(place.rating === null || typeof(place.rating) === 'undefined')
+                        place.rating = 'Chưa có đánh giá nào';
+                    console.log("mediaData")
+                    console.log(mediaData[0].images.standard_resolution)
+                    infowindow.setContent('<div><strong>' + place.name + '</strong><br>' +
+                            'Place ID: ' + place.place_id + '<br>' +
+                            'Rating: ' + place.rating + '<br>' +
+                            place.formatted_address + '</div>' +
+                            '<img src="'+mediaData[0].images.standard_resolution.url+'" alt="" width="100" height="100">' +
+                            '<img src="'+mediaData[1].images.standard_resolution.url+'" alt="" width="100" height="100">'
+                    );
+                    infowindow.open(map, this);
+                });
             }
         });
     }
@@ -216,6 +250,9 @@
               success: function (data) {
                   if(data){
                       console.log(data);
+                      mediaData=data.data;
+                      console.log("mediaData")
+                      console.log(mediaData)
                     ShowPictures(data.data);
                   }
               }
